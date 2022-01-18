@@ -1,11 +1,15 @@
 import pymysql
 from datetime import datetime
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+PASSWORD = os.environ.get('PASSWORD')
 
 class DBupdater:
     def __init__(self):
         """생성자 : MariaDB 연결 및 딕셔너리 생성"""
-        self.conn = pymysql.connect(host='localhost', user='root', password='dongdong', db='discord_bot',
+        self.conn = pymysql.connect(host='localhost', user='root', password=PASSWORD, db='discord_bot',
                                     charset='utf8')
 
         with self.conn.cursor() as curs:

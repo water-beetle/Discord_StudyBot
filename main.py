@@ -4,6 +4,12 @@ import datetime
 from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
+from dotenv import load_dotenv
+import os
+
+#Token값 가져오기
+load_dotenv()
+TOKEN = os.environ.get("TOKEN")
 
 app = commands.Bot(command_prefix='!')
 db = DBupdater()
@@ -15,8 +21,8 @@ today_study = {}  # 오늘 공부에 참여한 인원들의 하루 공부시간 
 today_rest_time = defaultdict(datetime.timedelta)  # 오늘 휴식한 인원들의 휴식시간 {이름 : 휴식시간}
 today_attend = []  # 오늘 출석 여부 변수
 embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())  # 출석 정보 출력
-count = defaultdict(datetime.timedelta)
-today_study_time = defaultdict(datetime.timedelta)
+count = defaultdict(datetime.timedelta) #10분을 얼마나 쉬었는지 체크
+today_study_time = defaultdict(datetime.timedelta) #유저의 오늘 공부시간
 
 app.remove_command("help")
 
@@ -186,7 +192,7 @@ async def 휴식(ctx):
 
         await wait_user()
 
-
+# today_rest_time 초기화 필요
 @app.command()
 async def 종료(ctx):
     if db.is_admit(ctx.author.name):
@@ -224,5 +230,9 @@ async def 종료(ctx):
             f':book: 공부 시간 : {strfdelta(today_study_time[ctx.author.name] - today_rest_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}')
         today_rest_time[ctx.author.name] = datetime.timedelta()
 
+        #다음 공부를 위한 변수 초기화
+        today_study_time[ctx.author.name] = None
+        today_rest_time[ctx.author.name] = None
 
-app.run('OTMxNDQzMjEyNDU4MDIwOTM0.YeEgFw.P75shc3mWT5eubQV4PK7OhLjR9M')
+
+app.run(TOKEN)
