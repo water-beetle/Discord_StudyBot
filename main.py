@@ -229,12 +229,13 @@ async def 종료(ctx):
         db.update_5(ctx.author.name, today_study_time[ctx.author.name])
 
         await ctx.send(
-            f':book: 공부 시간 : {strfdelta(today_study_time[ctx.author.name] - today_rest_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}')
+            f':book: 공부 시간 : {strfdelta(today_study_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}'
+            f':coffee: 휴식 시간 : {strfdelta(today_rest_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}')
         today_rest_time[ctx.author.name] = datetime.timedelta()
 
         #다음 공부를 위한 변수 초기화
-        today_study_time[ctx.author.name] = None
-        today_rest_time[ctx.author.name] = None
+        today_study_time[ctx.author.name] = datetime.timedelta()
+        today_rest_time[ctx.author.name] = datetime.timedelta()
 
 
 app.run(TOKEN)
