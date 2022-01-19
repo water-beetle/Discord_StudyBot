@@ -9,12 +9,6 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 sched = BlockingScheduler()
 
-# Executes every minutes
-def job1():
-    print('hello')
-sched.add_job(job1, 'cron', second='0', id="test")
-sched.start()
-
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
 
@@ -243,3 +237,9 @@ async def 종료(ctx):
 
 
 app.run(TOKEN)
+
+# Executes every minutes
+def job1():
+    print('hello')
+sched.add_job(job1, 'cron', second='0', id="test")
+sched.start()
