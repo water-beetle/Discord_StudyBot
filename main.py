@@ -8,7 +8,7 @@ import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
 
-sched = AsyncIOScheduler(timezone="Asia/Seoul")
+sched = AsyncIOScheduler(timezone="Asia/Seoul", event_loop=asyncio.WindowsSelectorEventLoopPolicy())
 
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
