@@ -8,7 +8,7 @@ import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
 
-sched = AsyncIOScheduler()
+sched = AsyncIOScheduler(timezone="Asia/Seoul")
 
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
@@ -251,5 +251,5 @@ def my_listener(event):
         print('scheduler job worked')
 
 sched.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
-sched.add_job(job1, 'interval', second='15')
+sched.add_job(job1, 'interval', seconds=15, id='test')
 sched.start()
