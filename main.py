@@ -253,3 +253,4 @@ def my_listener(event):
 sched.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
 sched.add_job(job1, 'interval', seconds=15, id='test')
 sched.start()
+asyncio.get_event_loop().run_forever()
