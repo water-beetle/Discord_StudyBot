@@ -5,6 +5,14 @@ from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
 import os
+from apscheduler.schedulers.blocking import BlockingScheduler
+
+sched = BlockingScheduler()
+
+# Executes every minutes
+def job1():
+    print('hello')
+sched.add_job(job1, 'cron', second='0', id="test")
 
 # Token값 가져오기
 # load_dotenv()
