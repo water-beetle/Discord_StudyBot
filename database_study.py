@@ -38,7 +38,7 @@ class DBupdater:
             COLLATE='utf8mb3_general_ci'
             ENGINE=InnoDB;
             """
-
+            curs.execute(sql)
         self.conn.commit()
 
     def __del__(self):
