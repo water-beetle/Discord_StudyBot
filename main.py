@@ -236,7 +236,13 @@ async def 종료(ctx):
         #다음 공부를 위한 변수 초기화
         today_study_time[ctx.author.name] = datetime.timedelta()
         today_rest_time[ctx.author.name] = datetime.timedelta()
+        today_study[ctx.author.name] = []
 
+# 일주일 랭킹표
+@app.command()
+async def 랭킹(ctx):
+    ranking_table = db.get_ranking()
+    print(ranking_table)
 
 app.run(TOKEN)
 
