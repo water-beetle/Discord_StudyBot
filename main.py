@@ -241,8 +241,13 @@ async def 종료(ctx):
 # 일주일 랭킹표
 @app.command()
 async def 랭킹(ctx):
+    ranking_dict = {}
     ranking_table = db.get_ranking()
-    print(ranking_table)
+    for data in ranking_table:
+        ranking_dict[data[0]] = strfdelta(data[1], "{hours}시간{minutes}분{seconds}초")
+
+    for key, value in ranking_dict.items():
+        ctx.send(f"{key} : {value}")
 
 app.run(TOKEN)
 
