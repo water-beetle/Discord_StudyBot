@@ -6,9 +6,16 @@ from collections import defaultdict
 from discord.ext import commands
 import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
 
-sched = AsyncIOScheduler(timezone="Asia/Seoul")
+async def job():
+    print('hi')
+
+scheduler = AsyncIOScheduler()
+scheduler.add_job(job, "interval", seconds=3)
+
+scheduler.start()
+
+asyncio.get_event_loop().run_forever()
 
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
@@ -239,18 +246,3 @@ async def 종료(ctx):
 
 
 app.run(TOKEN)
-
-# Executes every minutes
-async def job1():
-    await print('hello')
-
-def my_listener(event):
-    if event.exception:
-        print('scheduler job crashed')
-    else:
-        print('scheduler job worked')
-
-sched.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
-sched.add_job(job1, 'interval', seconds=15, id='test')
-sched.start()
-asyncio.get_event_loop().run_forever()
