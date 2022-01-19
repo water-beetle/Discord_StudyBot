@@ -241,8 +241,8 @@ async def 종료(ctx):
 app.run(TOKEN)
 
 # Executes every minutes
-def job1():
-    print('hello')
+async def job1():
+    await print('hello')
 
 def my_listener(event):
     if event.exception:
