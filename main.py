@@ -13,6 +13,7 @@ sched = BlockingScheduler()
 def job1():
     print('hello')
 sched.add_job(job1, 'cron', second='0', id="test")
+sched.start()
 
 # Token값 가져오기
 # load_dotenv()
