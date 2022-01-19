@@ -1,9 +1,9 @@
 import pymysql
 from datetime import datetime
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 
-load_dotenv()
+# load_dotenv()
 PASSWORD = os.environ.get('PASSWORD')
 
 class DBupdater:
