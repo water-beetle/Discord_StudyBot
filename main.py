@@ -5,9 +5,10 @@ from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
 import os
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
 
-sched = BlockingScheduler()
+sched = AsyncIOScheduler()
 
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
@@ -241,5 +242,13 @@ app.run(TOKEN)
 # Executes every minutes
 def job1():
     print('hello')
-sched.add_job(job1, 'cron', second='0', id="test")
+
+def my_listener(event):
+    if event.exception:
+        print('scheduler job crashed')
+    else:
+        print('scheduler job worked')
+
+sched.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+sched.add_job(job1, 'interval', second='15')
 sched.start()
