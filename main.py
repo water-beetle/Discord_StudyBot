@@ -251,5 +251,5 @@ def my_listener(event):
         print('scheduler job worked')
 
 sched.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
-sched.add_job(job1, 'interval', seconds='15')
+sched.add_job(job1, 'interval', minutes=1)
 sched.start()
