@@ -57,7 +57,7 @@ class DBupdater:
             result = curs.fetchone()
         return result is None
 
-    # attend_info에 [이름, 날짜]가 저장되어있는지 확인
+    # attend_date에 [이름, 날짜]가 저장되어있는지 확인
     def is_admit_today(self, name, date)->bool:
         with self.conn.cursor() as curs:
             sql = f"""

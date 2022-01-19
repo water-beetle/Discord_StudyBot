@@ -18,6 +18,29 @@ embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())  # �
 count = defaultdict(datetime.timedelta)
 today_study_time = defaultdict(datetime.timedelta)
 
+# Reset functions for global variables
+# apscheduler
+
+# today_study는 !종료 시마다 reset - 수정 필요
+# def reset_today_study():
+#     global today_study
+#     for val in today_study:
+#         today_study[val] = []
+
+def reset_today_rest_time():
+    global today_rest_time
+    for val in today_rest_time:
+        today_rest_time[val] = 0
+
+def reset_today_attend():
+    global today_attend
+    today_attend = []
+
+def reset_today_study_time():
+    global today_study_time
+    for val in today_study_time:
+        today_study_time[val] = 0
+
 app.remove_command("help")
 
 @app.group(invoke_without_command=True)
