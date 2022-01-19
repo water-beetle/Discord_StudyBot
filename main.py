@@ -6,7 +6,15 @@ from collections import defaultdict
 from discord.ext import commands
 import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
+import asyncio
+
+async def job():
+    print('hi')
+scheduler = AsyncIOScheduler()
+scheduler.add_job(job, "interval", seconds=3)
+
+scheduler.start()
+asyncio.get_event_loop().run_forever()
 
 sched = AsyncIOScheduler(timezone="Asia/Seoul")
 
