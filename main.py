@@ -16,12 +16,10 @@ sched.add_job(job1, 'cron', second='0', id="test")
 sched.start()
 
 # Token값 가져오기
-# load_dotenv()
 TOKEN = os.environ.get("TOKEN")
 
 app = commands.Bot(command_prefix='!')
-# temporarily delte db for heroku test
-# db = DBupdater()
+db = DBupdater()
 # 상수 모음
 ATTEND_TIME = '09:00'
 
