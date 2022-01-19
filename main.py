@@ -4,12 +4,12 @@ import datetime
 from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
-from dotenv import load_dotenv
-import os
+# import os
 
-#Token값 가져오기
-load_dotenv()
-TOKEN = os.environ.get("TOKEN")
+# Token값 가져오기
+# load_dotenv()
+# TOKEN = os.environ.get("TOKEN")
+TOKEN = ${{ screts.TOKEN }}
 
 app = commands.Bot(command_prefix='!')
 # temporarily delte db for heroku test
