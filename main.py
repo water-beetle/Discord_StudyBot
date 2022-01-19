@@ -12,7 +12,8 @@ load_dotenv()
 TOKEN = os.environ.get("TOKEN")
 
 app = commands.Bot(command_prefix='!')
-db = DBupdater()
+# temporarily delte db for heroku test
+# db = DBupdater()
 # 상수 모음
 ATTEND_TIME = '09:00'
 
