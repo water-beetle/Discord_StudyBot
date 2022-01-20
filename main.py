@@ -4,6 +4,22 @@ import datetime
 from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
+import os
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import asyncio
+
+async def job():
+    print('hi')
+scheduler = AsyncIOScheduler()
+scheduler.add_job(job, "interval", seconds=3)
+
+scheduler.start()
+asyncio.get_event_loop().run_forever()
+
+sched = AsyncIOScheduler(timezone="Asia/Seoul")
+
+# Token값 가져오기
+TOKEN = os.environ.get("TOKEN")
 
 app = commands.Bot(command_prefix='!')
 db = DBupdater()
@@ -15,8 +31,8 @@ today_study = {}  # 오늘 공부에 참여한 인원들의 하루 공부시간 
 today_rest_time = defaultdict(datetime.timedelta)  # 오늘 휴식한 인원들의 휴식시간 {이름 : 휴식시간}
 today_attend = []  # 오늘 출석 여부 변수
 embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())  # 출석 정보 출력
-count = defaultdict(datetime.timedelta)
-today_study_time = defaultdict(datetime.timedelta)
+count = defaultdict(datetime.timedelta) #10분을 얼마나 쉬었는지 체크
+today_study_time = defaultdict(datetime.timedelta) #유저의 오늘 공부시간
 
 # Reset functions for global variables
 # apscheduler
@@ -209,7 +225,7 @@ async def 휴식(ctx):
 
         await wait_user()
 
-
+# today_rest_time 초기화 필요
 @app.command()
 async def 종료(ctx):
     if db.is_admit(ctx.author.name):
@@ -244,8 +260,26 @@ async def 종료(ctx):
         db.update_5(ctx.author.name, today_study_time[ctx.author.name])
 
         await ctx.send(
-            f':book: 공부 시간 : {strfdelta(today_study_time[ctx.author.name] - today_rest_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}')
+            f':book: 공부 시간 : {strfdelta(today_study_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}\n'
+            f':coffee: 휴식 시간 : {strfdelta(today_rest_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}')
         today_rest_time[ctx.author.name] = datetime.timedelta()
 
+        #다음 공부를 위한 변수 초기화
+        today_study_time[ctx.author.name] = datetime.timedelta()
+        today_rest_time[ctx.author.name] = datetime.timedelta()
+        today_study[ctx.author.name] = []
 
-app.run('OTMxNDQzMjEyNDU4MDIwOTM0.YeEgFw.P75shc3mWT5eubQV4PK7OhLjR9M')
+# 일주일 랭킹표
+@app.command()
+async def 랭킹(ctx):
+    ranking_dict = {}
+    ranking_table = db.get_ranking()
+    for data in ranking_table:
+        ranking_dict[data[0]] = strfdelta(data[1], "{hours}시간{minutes}분{seconds}초")
+
+    for key, value in ranking_dict.items():
+        await ctx.send(f"{key} : {value}")
+
+app.run(TOKEN)
+
+

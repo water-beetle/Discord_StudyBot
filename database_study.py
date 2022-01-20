@@ -1,12 +1,19 @@
 import pymysql
 from datetime import datetime
+# from dotenv import load_dotenv
+import os
 
+# load_dotenv()
+PASSWORD = os.environ.get('PASSWORD')
+USER = os.environ.get('USER')
+HOST = os.environ.get('HOST')
+DBTITLE = os.environ.get('DBTITLE')
 
 class DBupdater:
     def __init__(self):
         """생성자 : MariaDB 연결 및 딕셔너리 생성"""
-        self.conn = pymysql.connect(host='localhost', user='root', password='dongdong', db='discord_bot',
-                                    charset='utf8')
+        self.conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DBTITLE,
+                                    charset='utf8', port=3306)
 
         with self.conn.cursor() as curs:
             sql = """
@@ -31,7 +38,7 @@ class DBupdater:
             COLLATE='utf8mb3_general_ci'
             ENGINE=InnoDB;
             """
-
+            curs.execute(sql)
         self.conn.commit()
 
     def __del__(self):
@@ -136,5 +143,14 @@ class DBupdater:
             curs.execute(sql)
             study_time = curs.fetchone()[0]
         return study_time
+
+    def get_ranking(self):
+        with self.conn.cursor() as curs:
+            sql = f'''
+            SELECT user_name, total_study_time FROM attend_info
+            '''
+            curs.execute(sql)
+            ranking_table = curs.fetchall()
+        return ranking_table
 
 
