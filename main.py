@@ -241,6 +241,7 @@ async def 랭킹(ctx):
     ranking_db = db.get_ranking()
     ranking_display = ""
     ranking_table = discord.Embed(title = "랭킹", colour = discord.Colour.purple())
+    out = ""
 
     # 1, 2, 3위를 기록하기 위한 count변수
     rank_count = 0
