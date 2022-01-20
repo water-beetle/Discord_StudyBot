@@ -24,14 +24,18 @@ embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())  # �
 count = defaultdict(datetime.timedelta) #10분을 얼마나 쉬었는지 체크
 today_study_time = defaultdict(datetime.timedelta) #유저의 오늘 공부시간
 
-def job():
-    global today_attend
+async def reset_today_attend():
+    global today_attend, embed
     today_attend = []
-    print('Complete')
+    embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())
+    print('Reset today_attend')
+    await commands.Context.send("일간 출석 정보를 초기화했어요!")
 
-schedule.every(10).seconds.do(job)
+schedule.every(10).seconds.do(reset_today_attend)
 # Modify to code below after completing test
 # schedule.every().day.at("04:00").do(job)
+# 주간 초기화
+# schedule.every().sunday.at("time").do(job)
 
 async def task():
     while True:
