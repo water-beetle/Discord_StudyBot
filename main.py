@@ -5,18 +5,6 @@ from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
 import os
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import asyncio
-
-async def job():
-    print('hi')
-scheduler = AsyncIOScheduler()
-scheduler.add_job(job, "interval", seconds=3)
-
-scheduler.start()
-asyncio.get_event_loop().run_forever()
-
-sched = AsyncIOScheduler(timezone="Asia/Seoul")
 
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
@@ -250,12 +238,34 @@ async def 종료(ctx):
 @app.command()
 async def 랭킹(ctx):
     ranking_dict = {}
-    ranking_table = db.get_ranking()
-    for data in ranking_table:
+    ranking_db = db.get_ranking()
+    ranking_display = ""
+    ranking_table = discord.Embed(title = "랭킹", colour = discord.Colour.purple())
+
+    # 1, 2, 3위를 기록하기 위한 count변수
+    rank_count = 0
+
+    for data in ranking_db:
         ranking_dict[data[0]] = strfdelta(data[1], "{hours}시간{minutes}분{seconds}초")
 
+    #출력 내용
     for key, value in ranking_dict.items():
-        await ctx.send(f"{key} : {value}")
+        rank_count += 1
+        if (rank_count == 1):
+            out += ":one:"
+        elif (rank_count == 2):
+            out += ":two:"
+        elif (rank_count == 3):
+            out += ":three"
+
+        out += f"{key} : {value}"
+
+        if(rank_count ==1):
+            out += ":crown:\n"
+        else:
+            out += "\n"
+
+    embed.add_field(name = "순위표", value = out)
 
 app.run(TOKEN)
 
