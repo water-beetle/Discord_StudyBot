@@ -8,16 +8,6 @@ import os
 import asyncio
 import schedule
 
-def job():
-    print('hi')
-
-schedule.every(10).seconds.do(job)
-
-async def task():
-    while True:
-        schedule.run_pending()
-        await asyncio.sleep(1)
-
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
 
@@ -33,6 +23,20 @@ today_attend = []  # 오늘 출석 여부 변수
 embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())  # 출석 정보 출력
 count = defaultdict(datetime.timedelta) #10분을 얼마나 쉬었는지 체크
 today_study_time = defaultdict(datetime.timedelta) #유저의 오늘 공부시간
+
+def job():
+    global today_attend
+    today_attend = []
+    print('Complete')
+
+schedule.every(10).seconds.do(job)
+# Modify to code below after completing test
+# schedule.every().day.at("04:00").do(job)
+
+async def task():
+    while True:
+        schedule.run_pending()
+        await asyncio.sleep(1)
 
 # Reset functions for global variables
 # apscheduler
