@@ -33,6 +33,48 @@ async def reset_today_attend():
     # Hard coded now, need to be added as environment variable
     channel = app.get_channel(931413535605551127)
     await channel.send("일간 출석 정보를 초기화했어요!")
+
+# 일일 초기화 전 !공부 중인 사용자가 있는지 확인하는 기능 테스트
+async def check_user():
+    channel = app.get_channel(931413535605551127)
+    await channel.send(
+            "일일 서버 데이터 저장 및 초기화 작업을 수행할게요!\n"
+            "데이터 저장을 위해 !공부 중인 사용자님들을 종료할게요!\n"
+            "작업이 완료된 후 다시 <!출석> 후 <!공부>해주세요!"
+        )
+    for user in today_study:
+        if len(today_study[user]) % 2 == 1: # !공부 중인 경우
+            await channel.send(f"{user} 님이 공부하고 계시네요!")
+            today_study[user].append(datetime.datetime.now())
+            for i in range(0, len(today_study[user]), 2):
+                start_time = today_study[user][i]
+                end_time = today_study[user][i + 1]
+                print(start_time, end_time)
+                today_study_time[user] += end_time - start_time
+
+            await channel.send(
+            f"[{user}] - 공부 끝!\n:alarm_clock:  {today_study[user][0].strftime('%H:%M:%S')} ~ "
+            f"{datetime.datetime.now().strftime('%H:%M:%S')}")
+            # 오늘 처음 공부 종료를 할 경우
+            if db.is_admit_today(user, datetime.date.today()):
+                db.update_3(user, today_study_time[user])
+            # db에서 오늘 공부한 시간을 가져옴
+            else:
+                db.update_4(user, db.get_info(user) + today_study_time[ctx.author.name])
+
+            # db의 total_study_time 업데이트
+            db.update_5(user, today_study_time[user])
+
+            await channel.send(
+                f':book: 공부 시간 : {strfdelta(today_study_time[user], "{hours}시간{minutes}분{seconds}초")}\n'
+                f':coffee: 휴식 시간 : {strfdelta(today_rest_time[user], "{hours}시간{minutes}분{seconds}초")}')
+            today_rest_time[user] = datetime.timedelta()
+
+            #다음 공부를 위한 변수 초기화
+            # today_study_time[ctx.author.name] = datetime.timedelta()
+            # today_rest_time[ctx.author.name] = datetime.timedelta()
+            today_study[user] = []
+            
 # schedule.every(10).seconds.do(reset_today_attend)
 # Modify to code below after completing test
 # schedule.every().day.at("04:00").do(job)
@@ -54,7 +96,7 @@ async def reset_today_attend():
 #         today_study[val] = []
 
 scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
-scheduler.add_job(reset_today_attend, "interval", seconds=15, id="today_attend")
+scheduler.add_job(check_user, "interval", minutes=1, id="today_attend")
 scheduler.start()
 
 app.remove_command("help")
@@ -266,8 +308,8 @@ async def 종료(ctx):
         today_rest_time[ctx.author.name] = datetime.timedelta()
 
         #다음 공부를 위한 변수 초기화
-        today_study_time[ctx.author.name] = datetime.timedelta()
-        today_rest_time[ctx.author.name] = datetime.timedelta()
+        # today_study_time[ctx.author.name] = datetime.timedelta()
+        # today_rest_time[ctx.author.name] = datetime.timedelta()
         today_study[ctx.author.name] = []
 
 # 일주일 랭킹표
