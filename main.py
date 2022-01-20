@@ -266,7 +266,7 @@ async def 랭킹(ctx):
         else:
             out += "\n"
 
-    embed.add_field(name = "순위표", value = out)
+    ranking_table.add_field(name = "순위표", value = out)
 
 app.run(TOKEN)
 
