@@ -11,7 +11,7 @@ import schedule
 def job():
     print('hi')
 
-schedule.every(10).second.do(job)
+schedule.every(10).seconds.do(job)
 
 async def task():
     while True:
