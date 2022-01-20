@@ -5,18 +5,18 @@ from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
 import os
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
+import schedule
 
-async def job():
+def job():
     print('hi')
-scheduler = AsyncIOScheduler()
-scheduler.add_job(job, "interval", seconds=3)
 
-scheduler.start()
-asyncio.get_event_loop().run_forever()
+schedule.every(10).second.do(job)
 
-sched = AsyncIOScheduler(timezone="Asia/Seoul")
+async def task():
+    while True:
+        schedule.run_pending()
+        await asyncio.sleep(1)
 
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
@@ -104,6 +104,7 @@ async def 종료(ctx):
 @app.event
 async def on_ready():
     print(f'{app.user.name} 연결성공')
+    app.loop.create_task(task())
     await app.change_presence(status=discord.Status.online, activity=None)
 
 
