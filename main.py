@@ -1,4 +1,5 @@
 import asyncio
+from aiohttp import client
 import discord
 import datetime
 
@@ -6,11 +7,12 @@ from pytz import timezone
 from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
+from discord import Client
 import os
 import asyncio
 # import schedule
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-# from apscheduler.executors.asyncio import AsyncIOExecutor
+
 
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
@@ -28,13 +30,16 @@ embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())  # �
 count = defaultdict(datetime.timedelta) #10분을 얼마나 쉬었는지 체크
 today_study_time = defaultdict(datetime.timedelta) #유저의 오늘 공부시간
 
+# get channel to send message
+client = Client()
+channel = client.get_channel(931413535605551124)
+
 async def reset_today_attend():
     global today_attend, embed
     today_attend = []
     embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())
     print('Reset today_attend')
-    await commands.Context.send("일간 출석 정보를 초기화했어요!")
-
+    await channel.send("일간 출석 정보를 초기화했어요!")
 # schedule.every(10).seconds.do(reset_today_attend)
 # Modify to code below after completing test
 # schedule.every().day.at("04:00").do(job)
