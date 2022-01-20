@@ -1,12 +1,16 @@
 import asyncio
 import discord
 import datetime
+
+from pytz import timezone
 from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
 import os
 import asyncio
-import schedule
+# import schedule
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+# from apscheduler.executors.asyncio import AsyncIOExecutor
 
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
@@ -31,16 +35,16 @@ async def reset_today_attend():
     print('Reset today_attend')
     await commands.Context.send("일간 출석 정보를 초기화했어요!")
 
-schedule.every(10).seconds.do(reset_today_attend)
+# schedule.every(10).seconds.do(reset_today_attend)
 # Modify to code below after completing test
 # schedule.every().day.at("04:00").do(job)
 # 주간 초기화
 # schedule.every().sunday.at("time").do(job)
 
-async def task():
-    while True:
-        schedule.run_pending()
-        await asyncio.sleep(1)
+# async def task():
+#     while True:
+#         schedule.run_pending()
+#         await asyncio.sleep(1)
 
 # Reset functions for global variables
 # apscheduler
@@ -51,19 +55,9 @@ async def task():
 #     for val in today_study:
 #         today_study[val] = []
 
-def reset_today_rest_time():
-    global today_rest_time
-    for val in today_rest_time:
-        today_rest_time[val] = 0
-
-def reset_today_attend():
-    global today_attend
-    today_attend = []
-
-def reset_today_study_time():
-    global today_study_time
-    for val in today_study_time:
-        today_study_time[val] = 0
+scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
+scheduler.add_job(reset_today_attend, seconds=15, id="today_attend")
+scheduler.start()
 
 app.remove_command("help")
 
@@ -112,7 +106,7 @@ async def 종료(ctx):
 @app.event
 async def on_ready():
     print(f'{app.user.name} 연결성공')
-    app.loop.create_task(task())
+    # app.loop.create_task(task())
     await app.change_presence(status=discord.Status.online, activity=None)
 
 
