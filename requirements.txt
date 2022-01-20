@@ -2,3 +2,4 @@ discord.py
 asyncio
 pymysql
 apscheduler
+schedule
