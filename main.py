@@ -56,7 +56,7 @@ async def reset_today_attend():
 #         today_study[val] = []
 
 scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
-scheduler.add_job(reset_today_attend, seconds=15, id="today_attend")
+scheduler.add_job(reset_today_attend, "interval", seconds=15, id="today_attend")
 scheduler.start()
 
 app.remove_command("help")
