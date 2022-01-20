@@ -144,4 +144,13 @@ class DBupdater:
             study_time = curs.fetchone()[0]
         return study_time
 
+    def get_ranking(self):
+        with self.conn.cursor() as curs:
+            sql = f'''
+            SELECT user_name, total_study_time FROM attend_info
+            '''
+            curs.execute(sql)
+            ranking_table = curs.fetchall()
+        return ranking_table
+
 

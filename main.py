@@ -5,17 +5,6 @@ from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
 import os
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
-async def job():
-    print('hi')
-
-scheduler = AsyncIOScheduler()
-scheduler.add_job(job, "interval", seconds=3)
-
-scheduler.start()
-
-asyncio.get_event_loop().run_forever()
 
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
@@ -243,6 +232,44 @@ async def 종료(ctx):
         #다음 공부를 위한 변수 초기화
         today_study_time[ctx.author.name] = datetime.timedelta()
         today_rest_time[ctx.author.name] = datetime.timedelta()
+        today_study[ctx.author.name] = []
 
+# 일주일 랭킹표
+@app.command()
+async def 랭킹(ctx):
+    ranking_dict = {}
+    ranking_db = db.get_ranking()
+    ranking_display = ""
+    ranking_table = discord.Embed(title = "랭킹", colour = discord.Colour.purple())
+    out = ""
+
+    # 1, 2, 3위를 기록하기 위한 count변수
+    rank_count = 0
+
+    for data in ranking_db:
+        ranking_dict[data[0]] = strfdelta(data[1], "{hours}시간{minutes}분{seconds}초")
+
+    #출력 내용
+    for key, value in ranking_dict.items():
+        rank_count += 1
+        if (rank_count == 1):
+            out += ":one: "
+        elif (rank_count == 2):
+            out += ":two: "
+        elif (rank_count == 3):
+            out += ":three: "
+
+        out += f"{key} : {value}"
+
+        if(rank_count ==1):
+            out += ":crown:\n"
+        else:
+            out += "\n"
+
+    ranking_table.add_field(name = "순위표", value = out)
+    
+    await ctx.send(embed = ranking_table)
 
 app.run(TOKEN)
+
+
