@@ -253,11 +253,11 @@ async def 랭킹(ctx):
     for key, value in ranking_dict.items():
         rank_count += 1
         if (rank_count == 1):
-            out += ":one:"
+            out += ":one: "
         elif (rank_count == 2):
-            out += ":two:"
+            out += ":two: "
         elif (rank_count == 3):
-            out += ":three"
+            out += ":three: "
 
         out += f"{key} : {value}"
 
