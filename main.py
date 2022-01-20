@@ -8,11 +8,16 @@ import os
 import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
+# Intents to get guild member info
+intents = discord.Intents.default()
+intents.members = True
+
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
 
-app = commands.Bot(command_prefix='!')
+app = commands.Bot(command_prefix='!', intents=intents)
 db = DBupdater()
+
 # 상수 모음
 ATTEND_TIME = '09:00'
 
@@ -24,18 +29,9 @@ embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())  # �
 count = defaultdict(datetime.timedelta) #10분을 얼마나 쉬었는지 체크
 today_study_time = defaultdict(datetime.timedelta) #유저의 오늘 공부시간
 
-async def reset_today_attend():
-    global today_attend, embed
-    today_attend = []
-    embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())
-    print('Reset today_attend')
-    # get channel to send message
-    # Hard coded now, need to be added as environment variable
-    channel = app.get_channel(931413535605551127)
-    await channel.send("일간 출석 정보를 초기화했어요!")
-
-# 일일 초기화 전 !공부 중인 사용자가 있는지 확인하는 기능 테스트
-async def check_user():
+# Daily reset task for apscheduler
+async def daily_save():
+    # 초기화 전 !종료 하지 않은 사용자 있는지 확인 후 처리
     channel = app.get_channel(931413535605551127)
     await channel.send(
             "일일 서버 데이터 저장 및 초기화 작업을 수행할게요!\n"
@@ -60,7 +56,7 @@ async def check_user():
                 db.update_3(user, today_study_time[user])
             # db에서 오늘 공부한 시간을 가져옴
             else:
-                db.update_4(user, db.get_info(user) + today_study_time[ctx.author.name])
+                db.update_4(user, db.get_info(user) + today_study_time[user])
 
             # db의 total_study_time 업데이트
             db.update_5(user, today_study_time[user])
@@ -71,34 +67,33 @@ async def check_user():
             today_rest_time[user] = datetime.timedelta()
 
             #다음 공부를 위한 변수 초기화
-            # today_study_time[ctx.author.name] = datetime.timedelta()
-            # today_rest_time[ctx.author.name] = datetime.timedelta()
+            today_study_time[user] = datetime.timedelta()
+            today_rest_time[user] = datetime.timedelta()
             today_study[user] = []
+    
+    # today_attend 변수 초기화
+    global today_attend, embed
+    today_attend = []
+    embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())
+    print('Reset today_attend')
+
+    # 주간 초기화 코드 - attend_info table's total_study_time
+    # "UPDATE attend_info SET total_study_time='00:00:00';"
+    now_for_reset = datetime.datetime.now().date().strftime("%A")
+    if now_for_reset == 'Sunday':
+        guild = app.get_guild(931413535605551124)
+        for user in guild.members:
+            if db.is_admit(user):
+                db.update_5(user, defaultdict(datetime.timedelta))
+
+    await channel.send("일간 데이터 저장 및 초기화가 완료되었어요!")
             
-# schedule.every(10).seconds.do(reset_today_attend)
-# Modify to code below after completing test
-# schedule.every().day.at("04:00").do(job)
-# 주간 초기화
-# schedule.every().sunday.at("time").do(job)
-
-# async def task():
-#     while True:
-#         schedule.run_pending()
-#         await asyncio.sleep(1)
-
-# Reset functions for global variables
-# apscheduler
-
-# today_study는 !종료 시마다 reset - 수정 필요
-# def reset_today_study():
-#     global today_study
-#     for val in today_study:
-#         today_study[val] = []
-
+# Initialize Scheduler
 scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
-scheduler.add_job(check_user, "interval", minutes=1, id="today_attend")
+scheduler.add_job(daily_save, "interval", minutes=1, id="daily_save")
 scheduler.start()
 
+# Add Custom Help Command
 app.remove_command("help")
 
 @app.group(invoke_without_command=True)
@@ -143,6 +138,7 @@ async def 종료(ctx):
     em.add_field(name="사용법", value="!등록")
     await ctx.send(embed = em)
 
+# on_ready event
 @app.event
 async def on_ready():
     print(f'{app.user.name} 연결성공')
