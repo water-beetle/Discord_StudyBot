@@ -279,7 +279,7 @@ async def 기록(ctx):
     im = get_week_table()
 
     with BytesIO() as image_binary:
-        im.svae(image_binary, "png")
+        im.save(image_binary, "png")
         image_binary.seek(0)
         out = discord.file(fp = image_binary, filename = "week_table.png")
         await ctx.send(file = out)
