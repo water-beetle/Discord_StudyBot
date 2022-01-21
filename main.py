@@ -284,7 +284,7 @@ async def 기록(ctx):
         out = discord.File(fp = image_binary, filename = "week_table.png")
         await ctx.send(file = out)
 
- 
+
 
 app.run(TOKEN)
 
