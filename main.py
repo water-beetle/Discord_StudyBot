@@ -282,7 +282,7 @@ async def 기록(ctx):
     week_table_class = week_table(ctx.author.name)
     week_table_class.check_file_exists()
 
-    with BytesIO as image_binary:
+    with BytesIO() as image_binary:
         week_table_class.im.save(image_binary, "png")
         image_binary.seek(0)
         week_table_img = discord.file(fp = image_binary, filename = "week_table.png")
