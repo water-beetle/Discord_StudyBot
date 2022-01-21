@@ -85,8 +85,13 @@ class week_table:
         font = ImageFont.truetype(self.font_name, 45)
         d = ImageDraw.Draw(self.im)
 
+        print(seven_days)
+        print()
+        print()
+
         # table에 글씨 입력
         for day in range(7):
+            print(seven_days[date_of_monday + datetime.timedelta(days = day)])
             # db에 해당하는 날짜의 값이 있을 경우
             if seven_days[date_of_monday + datetime.timedelta(days = day)] is not None:
                 d.text((125 + 120 * day, + 105), "00:00:00", font=font, fill=(0, 0, 0))
