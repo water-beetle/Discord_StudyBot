@@ -73,7 +73,11 @@ class week_table:
             seven_days[date_of_monday + datetime.timedelta(days = day)] = None
 
         db_seven_days = self.db.get_seven_days(self.name, date_of_monday, date_of_sunday)
-        print(db_seven_days)
+
+        for day in db_seven_days:
+            seven_days[day[2]] = day
+
+        print(seven_days)
 
 
 
