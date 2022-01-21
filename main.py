@@ -80,17 +80,17 @@ async def daily_save():
     # 주간 초기화 코드 - attend_info table's total_study_time
     # "UPDATE attend_info SET total_study_time='00:00:00';"
     now_for_reset = datetime.datetime.now().date().strftime("%A")
-    if now_for_reset == 'Sunday':
+    if now_for_reset == 'Monday':
         guild = app.get_guild(931413535605551124)
         for user in guild.members:
-            if db.is_admit(user):
-                db.update_5(user, defaultdict(datetime.timedelta))
+            if not db.is_admit(user.name):
+                db.reset_total_study_time(user.name)
 
     await channel.send("일간 데이터 저장 및 초기화가 완료되었어요!")
-            
+
 # Initialize Scheduler
 scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
-scheduler.add_job(daily_save, "interval", minutes=1, id="daily_save")
+scheduler.add_job(daily_save, "cron", hour=5, minute=0, id="daily_save")
 scheduler.start()
 
 # Add Custom Help Command
@@ -320,5 +320,3 @@ async def 랭킹(ctx):
         await ctx.send(f"{key} : {value}")
 
 app.run(TOKEN)
-
-
