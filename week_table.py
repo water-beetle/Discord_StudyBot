@@ -23,8 +23,6 @@ class week_table:
 
     def make_week_table(self) -> None:
 
-        font = ImageFont.truetype(self.font_name, 75)
-
         date_im = []
         menu_im = []
         date_name = ["월", "화", "수", "목", "금", "토", "일"]
@@ -37,12 +35,12 @@ class week_table:
         line = Image.new("RGB", (120, 90), (230, 230, 230))
         d = ImageDraw.Draw(self.im)
 
+        font = ImageFont.truetype(self.font_name, 75)
         # 날짜 이미지 추가
         for date in range(0, 7):
             date_im.append(Image.new("RGB", (120, 90), date_colors[date]))
             self.im.paste(date_im[date], ((date + 1) * 120, 0))
             d.text(((date + 1) * 120 + 40, -5), date_name[date], font=font, fill=(0, 0, 0))
-        date_draw = ImageDraw.Draw(self.im)
 
         font = ImageFont.truetype(self.font_name, 45)
         # 메뉴 이미지 추가
@@ -59,10 +57,16 @@ class week_table:
         self.im.save(self.filename)
 
     def add_data(self):
-        day_to_int = {"Monday" : 0, "Tuesday" : 1, "Wednesday" : 2, "Thursday" : 3, "Friday" : 4, "Saturday" : 5, "Sunday" : 6}
-        seven_days = {}
         # wee_table.png 불러오기
         self.check_file_exists()
+
+        #변수 모음
+        day_to_int = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4, "Saturday": 5, "Sunday": 6}
+        seven_days = {} # {날짜 : 해당 날짜에 해당하는 db의 값}
+        db_seven_days = [] # {7일간의 db의 값}
+        date_of_monday = None
+        date_of_sunday = None
+
         # 오늘의 요일의 int값
         today_day_int = day_to_int[datetime.datetime.now().date().strftime("%A")]
         # 이번주의 월요일 날짜
@@ -72,12 +76,20 @@ class week_table:
         for day in range(7):
             seven_days[date_of_monday + datetime.timedelta(days = day)] = None
 
+        # db_seven_days - [0]:user_name, [1]:today_study_time, [2]:today_date, [3]:is_achieve
         db_seven_days = self.db.get_seven_days(self.name, date_of_monday, date_of_sunday)
 
         for day in db_seven_days:
             seven_days[day[2]] = day
 
-        print(seven_days)
+        font = ImageFont.truetype(self.font_name, 45)
+        d = ImageDraw.Draw(self.im)
+
+        # table에 글씨 입력
+        for day in range(7):
+            # db에 해당하는 날짜의 값이 있을 경우
+            if seven_days[date_of_monday + day] is not None:
+                d.text((125 + 120 * day, + 105), "00:00:00", font=font, fill=(0, 0, 0))
 
 
 
