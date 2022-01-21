@@ -19,7 +19,7 @@ class week_table:
             self.im = Image.open(self.filename)
         except IOError:
             self.make_week_table()
-            self.im = open(self.filename, "rb")
+            self.im = Image.open(self.filename)
 
     def make_week_table(self) -> None:
 
