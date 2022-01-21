@@ -5,8 +5,8 @@ from io import BytesIO
 
 def get_week_table():
 
-    font = "my_font.ttf"
-    imageFont = ImageFont.truetype(font, 50)
+    font_name = "./.fonts/my_font.ttf"
+    font = ImageFont.truetype(font_name, 50)
 
 
     date_im = []
