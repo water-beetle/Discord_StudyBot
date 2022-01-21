@@ -13,7 +13,10 @@ from week_table import get_week_table
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
 
-app = commands.Bot(command_prefix='!')
+intents = discord.Intents.default()
+intents.members = True
+intents.presences = True
+app = commands.Bot(command_prefix='!', intents = intents)
 db = DBupdater()
 # 상수 모음
 ATTEND_TIME = '09:00'
@@ -284,7 +287,10 @@ async def 기록(ctx):
         out = discord.File(fp = image_binary, filename = "week_table.png")
         await ctx.send(file = out)
 
-
+@app.event()
+async def on_member_update(before, after):
+    print(before)
+    print(after)
 
 app.run(TOKEN)
 
