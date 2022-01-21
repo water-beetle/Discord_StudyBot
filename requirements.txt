@@ -2,4 +2,4 @@ discord.py
 asyncio==3.4.3
 pymysql
 apscheduler
-PIL
+Pillow
