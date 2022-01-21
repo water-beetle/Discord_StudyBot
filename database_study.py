@@ -153,4 +153,13 @@ class DBupdater:
             ranking_table = curs.fetchall()
         return ranking_table
 
+    def get_seven_days(self, name, start_date, end_date):
+        with self.conn.cursor() as curs:
+            sql = f'''
+            SELECT * FROM attend_date WHERE today_date <= '{end_date}' and today_date >= '{start_date}' AND user_name = '{name}'
+            '''
+            curs.execute(sql)
+            result = curs.fetchall()
+        return result
+
 

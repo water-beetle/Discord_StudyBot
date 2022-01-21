@@ -7,7 +7,7 @@ from io import BytesIO
 from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
-from week_table import get_week_table
+from week_table import week_table
 
 
 # Token값 가져오기
@@ -279,13 +279,8 @@ async def 랭킹(ctx):
 
 @app.command()
 async def 기록(ctx):
-    im = get_week_table()
-
-    with BytesIO() as image_binary:
-        im.save(image_binary, "png")
-        image_binary.seek(0)
-        out = discord.File(fp = image_binary, filename = "week_table.png")
-        await ctx.send(file = out)
+    week_table_class = week_table(ctx.author.name)
+    week_table_class.add_data()
 
 @app.event
 async def on_member_update(before, after):
