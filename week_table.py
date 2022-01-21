@@ -3,7 +3,7 @@ from PIL import ImageFont
 from io import BytesIO
 
 
-async def get_week_table():
+def get_week_table():
     date_im = []
     menu_im = []
     date_colors = [(77, 137, 99), (105, 165, 131), (225, 179, 120), (224, 204, 151), (236, 121, 154), (159, 2, 81),
