@@ -287,7 +287,7 @@ async def 기록(ctx):
         out = discord.File(fp = image_binary, filename = "week_table.png")
         await ctx.send(file = out)
 
-@app.event()
+@app.event
 async def on_member_update(before, after):
     print(before)
     print(after)
