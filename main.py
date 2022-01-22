@@ -1,19 +1,23 @@
 import asyncio
 import discord
 import datetime
+from PIL import Image
+import os
+from io import BytesIO
 from database_study import DBupdater
 from collections import defaultdict
 from discord.ext import commands
-import os
-import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from week_table import week_table
+
+# Token값 가져오기
+TOKEN = os.environ.get("TOKEN")
+
 
 # Intents to get guild member info
 intents = discord.Intents.default()
 intents.members = True
-
-# Token값 가져오기
-TOKEN = os.environ.get("TOKEN")
+intents.presences = True
 
 app = commands.Bot(command_prefix='!', intents=intents)
 db = DBupdater()
@@ -26,8 +30,8 @@ today_study = {}  # 오늘 공부에 참여한 인원들의 하루 공부시간 
 today_rest_time = defaultdict(datetime.timedelta)  # 오늘 휴식한 인원들의 휴식시간 {이름 : 휴식시간}
 today_attend = []  # 오늘 출석 여부 변수
 embed = discord.Embed(title="출석정보", colour=discord.Colour.purple())  # 출석 정보 출력
-count = defaultdict(datetime.timedelta) #10분을 얼마나 쉬었는지 체크
-today_study_time = defaultdict(datetime.timedelta) #유저의 오늘 공부시간
+count = defaultdict(datetime.timedelta)  # 10분을 얼마나 쉬었는지 체크
+today_study_time = defaultdict(datetime.timedelta)  # 유저의 오늘 공부시간
 
 # Daily reset task for apscheduler
 async def daily_save():
@@ -96,47 +100,55 @@ scheduler.start()
 # Add Custom Help Command
 app.remove_command("help")
 
+
 @app.group(invoke_without_command=True)
 async def help(ctx):
     em = discord.Embed(title="Help", description="!help <명령어> 를 통해 더 자세한 정보를 확인해 보세요.")
     em.add_field(name="명령어", value="등록, 목표시간, 출석, 시작, 휴식, 종료")
-    await ctx.send(embed = em)
+    await ctx.send(embed=em)
+
 
 @help.command()
 async def 등록(ctx):
-    em = discord.Embed(title="등록", description="디스코드 이름으로  사용자를 등록합니다.", color = ctx.author.color)
+    em = discord.Embed(title="등록", description="디스코드 이름으로  사용자를 등록합니다.", color=ctx.author.color)
     em.add_field(name="사용법", value="!등록")
-    await ctx.send(embed = em)
-    
+    await ctx.send(embed=em)
+
+
 @help.command()
 async def 목표시간(ctx):
-    em = discord.Embed(title="목표시간", description="디스코드 이름으로  사용자를 등록합니다.", color = ctx.author.color)
+    em = discord.Embed(title="목표시간", description="디스코드 이름으로  사용자를 등록합니다.", color=ctx.author.color)
     em.add_field(name="사용법", value="!등록")
-    await ctx.send(embed = em)
+    await ctx.send(embed=em)
+
 
 @help.command()
 async def 출석(ctx):
-    em = discord.Embed(title="출석", description="디스코드 이름으로  사용자를 등록합니다.", color = ctx.author.color)
+    em = discord.Embed(title="출석", description="디스코드 이름으로  사용자를 등록합니다.", color=ctx.author.color)
     em.add_field(name="사용법", value="!등록")
-    await ctx.send(embed = em)
+    await ctx.send(embed=em)
+
 
 @help.command()
 async def 시작(ctx):
-    em = discord.Embed(title="시작", description="디스코드 이름으로  사용자를 등록합니다.", color = ctx.author.color)
+    em = discord.Embed(title="시작", description="디스코드 이름으로  사용자를 등록합니다.", color=ctx.author.color)
     em.add_field(name="사용법", value="!등록")
-    await ctx.send(embed = em)
+    await ctx.send(embed=em)
+
 
 @help.command()
 async def 휴식(ctx):
-    em = discord.Embed(title="휴식", description="디스코드 이름으로  사용자를 등록합니다.", color = ctx.author.color)
+    em = discord.Embed(title="휴식", description="디스코드 이름으로  사용자를 등록합니다.", color=ctx.author.color)
     em.add_field(name="사용법", value="!등록")
-    await ctx.send(embed = em)
+    await ctx.send(embed=em)
+
 
 @help.command()
 async def 종료(ctx):
-    em = discord.Embed(title="종료", description="디스코드 이름으로  사용자를 등록합니다.", color = ctx.author.color)
+    em = discord.Embed(title="종료", description="디스코드 이름으로  사용자를 등록합니다.", color=ctx.author.color)
     em.add_field(name="사용법", value="!등록")
-    await ctx.send(embed = em)
+    await ctx.send(embed=em)
+
 
 # on_ready event
 @app.event
@@ -220,7 +232,6 @@ async def 시작(ctx):
         await ctx.send("출석체크 부탁드립니다")
 
 
-
 @app.command()
 async def 휴식(ctx):
     if db.is_admit(ctx.author.name):
@@ -252,17 +263,19 @@ async def 휴식(ctx):
                 await ctx.send(f'{ctx.author.mention} 10분 지났습니다...')
                 await wait_user()
             else:
-                total_rest_time = datetime.datetime.now() + datetime.timedelta(minutes=10) - rest_time + count[ctx.author.name]
+                total_rest_time = datetime.datetime.now() + datetime.timedelta(minutes=10) - rest_time + count[
+                    ctx.author.name]
                 # today_rest_time에 사용자 휴식시간을 더해줌
                 today_rest_time[ctx.author.name] += total_rest_time
                 await ctx.send(
                     f'[{ctx.author.name}] - 휴식 끝 \n 휴식시간 - {strfdelta(total_rest_time, "{minutes}분{seconds}초")}')
                 # 공부 시작시간 입력
                 today_study[ctx.author.name].append(datetime.datetime.now())
-                #휴식 count 초기화
+                # 휴식 count 초기화
                 count[ctx.author.name] = datetime.timedelta()
 
         await wait_user()
+
 
 # today_rest_time 초기화 필요
 @app.command()
@@ -303,20 +316,65 @@ async def 종료(ctx):
             f':coffee: 휴식 시간 : {strfdelta(today_rest_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}')
         today_rest_time[ctx.author.name] = datetime.timedelta()
 
-        #다음 공부를 위한 변수 초기화
-        # today_study_time[ctx.author.name] = datetime.timedelta()
-        # today_rest_time[ctx.author.name] = datetime.timedelta()
+        # 다음 공부를 위한 변수 초기화
+        today_study_time[ctx.author.name] = datetime.timedelta()
+        today_rest_time[ctx.author.name] = datetime.timedelta()
         today_study[ctx.author.name] = []
+
 
 # 일주일 랭킹표
 @app.command()
 async def 랭킹(ctx):
     ranking_dict = {}
-    ranking_table = db.get_ranking()
-    for data in ranking_table:
+    ranking_db = db.get_ranking()
+    ranking_display = ""
+    ranking_table = discord.Embed(title="랭킹", colour=discord.Colour.purple())
+    out = ""
+
+    # 1, 2, 3위를 기록하기 위한 count변수
+    rank_count = 0
+
+    for data in ranking_db:
         ranking_dict[data[0]] = strfdelta(data[1], "{hours}시간{minutes}분{seconds}초")
 
+    #정렬
+    ranking_dict = sorted(ranking_dict.items(), key = lambda x: x[1])
+
+    # 출력 내용
     for key, value in ranking_dict.items():
-        await ctx.send(f"{key} : {value}")
+        rank_count += 1
+        if (rank_count == 1):
+            out += ":one: "
+        elif (rank_count == 2):
+            out += ":two: "
+        elif (rank_count == 3):
+            out += ":three: "
+
+        out += f"{key} : {value}"
+
+        if (rank_count == 1):
+            out += ":crown:\n"
+        else:
+            out += "\n"
+
+    ranking_table.add_field(name="순위표", value=out)
+
+    await ctx.send(embed=ranking_table)
+
+
+@app.command()
+async def 기록(ctx):
+    week_table_class = week_table(ctx.author.name)
+    week_table_class.add_data()
+
+    with BytesIO() as image_binary:
+        week_table_class.im.save(image_binary, "png")
+        image_binary.seek(0)
+        week_table_img = discord.File(fp=image_binary, filename="week_table.png")
+        await ctx.send(file=week_table_img)
+
+
+
+
 
 app.run(TOKEN)
