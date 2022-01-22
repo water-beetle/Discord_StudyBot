@@ -1,5 +1,5 @@
 import pymysql
-from datetime import datetime
+from datetime import datetime, timedelta
 # from dotenv import load_dotenv
 import os
 
@@ -12,8 +12,7 @@ DBTITLE = os.environ.get('DBTITLE')
 class DBupdater:
     def __init__(self):
         """생성자 : MariaDB 연결 및 딕셔너리 생성"""
-        self.conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DBTITLE,
-                                    charset='utf8', port=3306)
+        self.conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DBTITLE, charset='utf8', port=3306)
 
         with self.conn.cursor() as curs:
             sql = """
@@ -58,18 +57,20 @@ class DBupdater:
         with self.conn.cursor() as curs:
             sql = f"""
             SELECT user_name FROM attend_info
-            WHERE user_name="{name}"
+            WHERE user_name = '{name}'
             """
             curs.execute(sql)
             result = curs.fetchone()
+            print(f"{name}'s fetch result is", result)
+        self.conn.commit()
         return result is None
 
-    # attend_info에 [이름, 날짜]가 저장되어있는지 확인
+    # attend_date에 [이름, 날짜]가 저장되어있는지 확인
     def is_admit_today(self, name, date)->bool:
         with self.conn.cursor() as curs:
             sql = f"""
             SELECT * FROM attend_date
-            WHERE user_name='{name}' AND today_date='{date}'
+            WHERE user_name = '{name}' AND today_date='{date}'
             """
             curs.execute(sql)
             result = curs.fetchone()
@@ -125,12 +126,22 @@ class DBupdater:
     def update_5(self, name, study_time):
         with self.conn.cursor() as curs:
             sql = f'''
-            SELECT total_study_time FROM attend_info WHERE user_name ='{name}'
+            SELECT total_study_time FROM attend_info WHERE user_name = '{name}'
             '''
             curs.execute(sql)
             total_study_time = curs.fetchone()[0] + study_time
             sql = f'''
             UPDATE attend_info SET total_study_time='{total_study_time}' WHERE user_name='{name}'
+            '''
+            curs.execute(sql)
+        self.conn.commit()
+
+    # Weekly reset : total_study_time을 00:00:00으로 초기화
+    def reset_total_study_time(self, name):
+        with self.conn.cursor() as curs:
+            time_zero = timedelta()
+            sql = f'''
+            UPDATE attend_info SET total_study_time='{time_zero}' WHERE user_name='{name}'
             '''
             curs.execute(sql)
         self.conn.commit()
