@@ -265,8 +265,8 @@ async def 랭킹(ctx):
     for data in ranking_db:
         ranking_dict[data[0]] = strfdelta(data[1], "{hours}시간{minutes}분{seconds}초")
 
-        # 정렬
-        ranking_dict = sorted(ranking_dict.items(), key=lambda x: x[1], reverse=True)
+    # 정렬
+    ranking_dict = sorted(ranking_dict.items(), key=lambda x: x[1], reverse=True)
 
     # 출력 내용
     for key, value in ranking_dict:
