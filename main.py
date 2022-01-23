@@ -298,9 +298,8 @@ async def 종료(ctx):
             print(start_time, end_time)
             today_study_time[ctx.author.name] += end_time - start_time
 
-        await ctx.send(
-            f"[{ctx.author.name}] - 공부 끝!\n:alarm_clock:  {today_study[ctx.author.name][0].strftime('%H:%M:%S')} ~ "
-            f"{datetime.datetime.now().strftime('%H:%M:%S')}")
+        display = discord.Embed(title = "공부 기록", colur = discord.Colour.magenta())
+        out = f":alarm_clock:  {today_study[ctx.author.name][0].strftime('%H:%M:%S')} ~ {datetime.datetime.now().strftime('%H:%M:%S')}\n "
         # 오늘 처음 공부 종료를 할 경우
         if db.is_admit_today(ctx.author.name, datetime.date.today()):
             db.update_3(ctx.author.name, today_study_time[ctx.author.name])
@@ -311,10 +310,10 @@ async def 종료(ctx):
         # db의 total_study_time 업데이트
         db.update_5(ctx.author.name, today_study_time[ctx.author.name])
 
-        await ctx.send(
-            f':book: 공부 시간 : {strfdelta(today_study_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}\n'
-            f':coffee: 휴식 시간 : {strfdelta(today_rest_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}')
-        today_rest_time[ctx.author.name] = datetime.timedelta()
+        out += f':book: 공부 시간 : {strfdelta(today_study_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}\n :coffee: 휴식 시간 : {strfdelta(today_rest_time[ctx.author.name], "{hours}시간{minutes}분{seconds}초")}'
+        display.add_field(name = f"[{ctx.author.name}] - 공부 끝!\n", value = out)
+
+        await ctx.send(embed = display)
 
         # 다음 공부를 위한 변수 초기화
         today_study_time[ctx.author.name] = datetime.timedelta()
@@ -338,7 +337,7 @@ async def 랭킹(ctx):
         ranking_dict[data[0]] = strfdelta(data[1], "{hours}시간{minutes}분{seconds}초")
 
     # 정렬
-    ranking_dict = sorted(ranking_dict.items(), key=lambda x: x[1], reverse=True)
+    ranking_dict = sorted(ranking_dict.items(), key=lambda x: x[1])
 
     # 출력 내용
     for key, value in ranking_dict:
