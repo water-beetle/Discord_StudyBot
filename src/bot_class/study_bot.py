@@ -1,9 +1,9 @@
 import discord
 from datetime import datetime
 from discord.ext import commands
-import bot_commands
+from functions import bot_commands
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from database_study import DBupdater
+from . import database
 from collections import defaultdict
 import datetime
 
@@ -21,6 +21,7 @@ class StudyBot(commands.Bot):
         intents.members = True
         intents.presences = True
         super().__init__(command_prefix=prefix, intents=intents)
+        self.remove_command("help")
 
         # global variables here
         self.today_study = {}  # 오늘 공부에 참여한 인원들의 하루 공부시간 저장하는 변수 {이름 : [시작시간, 종료시간, 시작시간, 종료시간...]}
@@ -32,7 +33,7 @@ class StudyBot(commands.Bot):
         guild_id = 0
 
         # database here
-        self.db = DBupdater()
+        self.db = database.DBupdater()
 
         # constant variable
         self.ATTEND_TIME = '09:00'
@@ -40,7 +41,7 @@ class StudyBot(commands.Bot):
 
     def add_schedule(self) -> None:
         self.scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
-        self.scheduler.add_job(self.daily_save, "cron", hour=5, minute=0, id="daily_save")
+        self.scheduler.add_job(bot_commands.daily_save, "interval", args=[self], minutes=1, id="daily_save")
         self.scheduler.start()
 
     def run(self, token) -> None:

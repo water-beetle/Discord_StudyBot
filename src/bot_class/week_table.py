@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 from PIL import ImageFont
 import datetime
-from database_study import DBupdater
+from . import database
 from io import BytesIO
 
 
@@ -17,7 +17,7 @@ class week_table:
         self.im = None
         self.filename = "./week_table.png"
         self.font_name = "./.fonts/my_font.ttf"
-        self.db = DBupdater()
+        self.db = database.DBupdater()
         self.name = name
 
     # week_table.png 파일이 있는지 체크, 없으면 get_week_table 파일 만듬
