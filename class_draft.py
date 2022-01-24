@@ -17,10 +17,10 @@ def strfdelta(tdelta, fmt):
 
 class StudyBot(commands.Bot):
     def __init__(self, prefix) -> None:
-        self.intents = discord.Intents.default()
-        self.intents.members = True
-        self.intents.presences = True
-        super().__init__(command_prefix=prefix, intents=self.intents)
+        intents = discord.Intents.default()
+        intents.members = True
+        intents.presences = True
+        super().__init__(command_prefix=prefix, intents=intents)
 
         # global variables here
         self.today_study = {}  # 오늘 공부에 참여한 인원들의 하루 공부시간 저장하는 변수 {이름 : [시작시간, 종료시간, 시작시간, 종료시간...]}
@@ -40,7 +40,7 @@ class StudyBot(commands.Bot):
 
     def add_schedule(self) -> None:
         self.scheduler = AsyncIOScheduler(timezone="Asia/Seoul")
-        self.scheduler.add_job(self.daily_save, "interval", seconds=5, id="daily_save")
+        self.scheduler.add_job(self.daily_save, "cron", hour=5, minute=0, id="daily_save")
         self.scheduler.start()
 
     def run(self, token) -> None:
@@ -107,8 +107,8 @@ class StudyBot(commands.Bot):
     def initialize(self):
         @self.event
         async def on_ready():
-            print(f'{self.bot.user.name} connected')
-            await self.bot.change_presence(activity=discord.Game("Study Bot"), status=discord.Status.online)
+            print(f'{self.user.name} connected')
+            await self.change_presence(activity=discord.Game("Study Bot"), status=discord.Status.online)
 
         # auto_save & get guild_id feature
         @self.event
@@ -145,7 +145,7 @@ class StudyBot(commands.Bot):
         @self.command()
         async def 휴식(ctx):
             await bot_commands._휴식(ctx, self.db, self.today_attend, self.today_study, self.count, self.today_rest_time,
-                                   self.bot)
+                                   self)
 
         # today_rest_time 초기화 필요
         @self.command()

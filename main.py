@@ -1,11 +1,11 @@
-from class_draft import Bot
+from class_draft import StudyBot
 
 # Token값 가져오기
 # TOKEN = os.environ.get("TOKEN")
 
-TOKEN = "OTMxNDMyMDkyNTMxODM5MDM2.YeEVvA.7rD70QR7p9dN_CDr12gImMhvTWI"
+TOKEN = "..."
 
-discord_bot = Bot('!')
+discord_bot = StudyBot('!')
 discord_bot.initialize()
 discord_bot.add_schedule()
 discord_bot.run(TOKEN)
