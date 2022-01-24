@@ -4,8 +4,6 @@ import os
 # Token값 가져오기
 TOKEN = os.environ.get("TOKEN")
 
-# TOKEN = "..."
-
 discord_bot = StudyBot('!')
 
 for filename in os.listdir("src/Cogs"):
@@ -13,5 +11,4 @@ for filename in os.listdir("src/Cogs"):
         discord_bot.load_extension(f"Cogs.{filename[:-3]}")
 
 discord_bot.initialize()
-discord_bot.add_schedule()
 discord_bot.run(TOKEN)
