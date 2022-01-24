@@ -3,9 +3,9 @@ from datetime import datetime
 from discord.ext import commands
 from apscheduler.schedulers.background import BackgroundScheduler
 
-class bot:
+class StudyBot(commands.Bot):
     def __init__(self, prefix, intents) -> None:
-        self.bot = commands.Bot(command_prefix=prefix, intents=intents)
+        super().__init__(command_prefix=prefix, intents=intents)
         # global variables here
         # database here
 
@@ -15,16 +15,16 @@ class bot:
         scheduler.start()
 
     def run(self,token) -> None:
-        self.bot.run(token)
+        super().run(token)
 
     def initialize(self):
-        @self.bot.event
+        @self.event
         async def on_ready():
-            print(f'{self.bot.user.name} connected')
-            await self.bot.change_presence(activity=discord.Game("Study Bot"), status=discord.Status.online)
+            print(f'{self.user.name} connected')
+            await self.change_presence(activity=discord.Game("Study Bot"), status=discord.Status.online)
 
-        @self.bot.command()
-        async def hello(ctx):
+        @self.command()
+        async def name(ctx):
             await ctx.send('hell0')
 
 intents = discord.Intents.default()
@@ -35,7 +35,7 @@ intents.presences = True
 def task_hello():
     print('hello')
 
-discord_bot = bot('!', intents)
+discord_bot = StudyBot('!', intents)
 discord_bot.add_schedule(task_hello)
 discord_bot.initialize()
 discord_bot.run(TOKEN)
