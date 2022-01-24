@@ -12,8 +12,8 @@ DBTITLE = os.environ.get('DBTITLE')
 class DBupdater:
     def __init__(self):
         """생성자 : MariaDB 연결 및 딕셔너리 생성"""
-        # self.conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DBTITLE, charset='utf8', port=3306)
-        self.conn = pymysql.connect(host="localhost", user="root", password="yeongjun", db="pythondb", charset='utf8', port=3306)
+        self.conn = pymysql.connect(host=HOST, user=USER, password=PASSWORD, db=DBTITLE, charset='utf8', port=3306)
+        # self.conn = pymysql.connect(host="localhost", user="root", password="yeongjun", db="pythondb", charset='utf8', port=3306)
 
         with self.conn.cursor() as curs:
             sql = """
