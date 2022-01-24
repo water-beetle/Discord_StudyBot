@@ -13,7 +13,7 @@ import bot_commands
 
 # Token값 가져오기
 # TOKEN = os.environ.get("TOKEN")
-TOKEN = "OTMxNDMyMDkyNTMxODM5MDM2.YeEVvA.jmqxWvYVemzwOJOT3Dd2k_SG8Mw"
+TOKEN = "OTMxNDMyMDkyNTMxODM5MDM2.YeEVvA.7rD70QR7p9dN_CDr12gImMhvTWI"
 
 # Intents to get guild member info
 intents = discord.Intents.default()

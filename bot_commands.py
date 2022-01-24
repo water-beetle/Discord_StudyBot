@@ -3,7 +3,6 @@ import asyncio
 import discord
 from week_table import week_table
 from io import BytesIO
-from main import today_attend, embed # 수정 필요!
 
 ##############
 ###기타 함수###
