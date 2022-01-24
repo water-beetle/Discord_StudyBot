@@ -21,6 +21,7 @@ class StudyBot(commands.Bot):
         intents.members = True
         intents.presences = True
         super().__init__(command_prefix=prefix, intents=intents)
+        super().remove_command("help")
 
         # global variables here
         self.today_study = {}  # 오늘 공부에 참여한 인원들의 하루 공부시간 저장하는 변수 {이름 : [시작시간, 종료시간, 시작시간, 종료시간...]}
