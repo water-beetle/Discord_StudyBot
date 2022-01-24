@@ -55,17 +55,18 @@ class StudyBot(commands.Bot):
         async def on_ready():
             print(f'{self.user.name} connected')
             await self.change_presence(activity=discord.Game("Study Bot"), status=discord.Status.online)
-
-        # auto_save & get guild_id feature
+        
         @self.event
-        async def on_message(message):
-            self.guild_id = message.guild.id
+        async def on_guild_join(guild):
+            self.guild_id = guild.id
             if self.guild_id:
                 if not self.scheduler_added:
                     self.scheduler.add_job(bot_commands.daily_save, "cron", args=[self, self.guild_id], hour=4, minute=0, id="daily_save")
                     self.scheduler.start()
                     self.scheduler_added = True
-            await self.process_commands(message)
+            
+            channel = guild.text_channels[0]
+            await channel.send("도움말은 !help")
 
         ######################
         ### 명령어 처리 함수 ###
