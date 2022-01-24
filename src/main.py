@@ -2,9 +2,9 @@ from bot_class.study_bot import StudyBot
 import os
 
 # Token값 가져오기
-# TOKEN = os.environ.get("TOKEN")
+TOKEN = os.environ.get("TOKEN")
 
-TOKEN = "OTMxNDMyMDkyNTMxODM5MDM2.YeEVvA.rj9PWf2_la3wb5CClKAWDIlMu-w"
+# TOKEN = "..."
 
 discord_bot = StudyBot('!')
 
